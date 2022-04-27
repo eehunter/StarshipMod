@@ -1,0 +1,6 @@
+{
+  "generator": {
+    "type": "starship:starship"
+  },
+  "type": "starship:starship_type"
+}

@@ -29,6 +29,12 @@
         "adapter": "kotlin",
         "value": "com.oyosite.ticon.starship.StarshipClient"
       }
+    ],
+    "cardinal-components": [
+      {
+        "adapter": "kotlin",
+        "value": "com.oyosite.ticon.starship.component.ComponentEntrypoint"
+      }
     ]
   },
   "mixins": [
@@ -44,5 +50,10 @@
   },
   "suggests": {
     "another-mod": "*"
+  },
+  "custom": {
+    "cardinal-components": [
+      "starship:starship_component"
+    ]
   }
 }

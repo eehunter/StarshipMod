@@ -37,8 +37,14 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
 
+    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${property("cca-version")}")
+    include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${property("cca-version")}")
+
     modImplementation("com.github.apace100:apoli:${property("apoli_version")}"){excludeFabric()}
     include("com.github.apace100:apoli:${property("apoli_version")}"){excludeFabric()}
+
+    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${property("cca-version")}")
+    include("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${property("cca-version")}")
     //modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${property("wthit_version")}")
 }
 
