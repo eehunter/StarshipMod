@@ -20,6 +20,7 @@ interface StarshipWorldComponent : ComponentV3 {
     fun getIndex(pos: BlockPos): Int = getIndex(pos.x.floorDiv(1024), pos.y.floorDiv(1024))
 
 
+
     class Impl(val provider: World) : StarshipWorldComponent, AutoSyncedComponent{
         private val starships = mutableListOf<Starship?>()
 
