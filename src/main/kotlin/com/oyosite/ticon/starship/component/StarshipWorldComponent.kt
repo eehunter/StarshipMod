@@ -19,18 +19,21 @@ interface StarshipWorldComponent : ComponentV3 {
     fun getIndex(x: Int, y: Int): Int
     fun getIndex(pos: BlockPos): Int = getIndex(pos.x.floorDiv(1024), pos.y.floorDiv(1024))
 
-
+    fun addStarship(starship: Starship)
 
     class Impl(val provider: World) : StarshipWorldComponent, AutoSyncedComponent{
         private val starships = mutableListOf<Starship?>()
+
+        fun getOrigin(index: Int) = BlockPos((index%16)*1024+512, 256, index.floorDiv(16)*1024+512)
 
         override fun get(index: Int): Starship? = starships.getOrNull(index)
 
         override fun getIndex(x: Int, y: Int): Int = y*16+x
 
-        override fun readFromNbt(tag: NbtCompound) = tag.getList("starships", NbtElement.COMPOUND_TYPE).map{it as NbtCompound}.forEach{ starships += StarshipType.REGISTRY.get(identifier(it.getString("type")))?.makeStarship(it.getCompound("data")) }
+        override fun readFromNbt(tag: NbtCompound) = tag.getList("starships", NbtElement.COMPOUND_TYPE).map{it as NbtCompound}.forEachIndexed{ i, it -> starships += StarshipType.REGISTRY.get(identifier(it.getString("type")))?.makeStarship(it.getCompound("data"), getOrigin(i)) }
 
         override fun writeToNbt(tag: NbtCompound) {tag.put("starships", NbtList().apply{addAll(starships.map{NbtCompound().apply{putString("type", it?.type?.id?.toString() ?: "");put("data",it?.writeToNbt()?:NbtCompound())}})})}
 
+        override fun addStarship(starship: Starship) {if(!starships.contains(starship))starships.add(starship)}
     }
 }
