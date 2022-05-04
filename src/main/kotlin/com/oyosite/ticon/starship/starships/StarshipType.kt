@@ -3,6 +3,7 @@ package com.oyosite.ticon.starship.starships
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.oyosite.ticon.starship.Util.identifier
+import com.oyosite.ticon.starship.Util.register
 import io.github.apace100.calio.data.SerializableDataType
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder
 import net.minecraft.nbt.NbtCompound
@@ -17,17 +18,38 @@ open class StarshipType(val id: Identifier, val pos: BlockPos, val structure: Id
     fun makeStarship(nbt: NbtCompound? = null, pos: BlockPos): Starship = factory(nbt, pos)
 
     companion object {
-        val REGISTRY = FabricRegistryBuilder.createSimple(StarshipType::class.java, identifier("starship_type")).buildAndRegister()
-
         //for debugging
-        val GENERIC_STARSHIP_TYPE = StarshipType(identifier("generic"), BlockPos(512, 256, 512), identifier("none"), null){ nbt, pos ->
+        val GENERIC_STARSHIP_TYPE = StarshipType(identifier("generic"), BlockPos(512, 256, 512), identifier("none"), BlockPos(0,0,0)){ nbt, pos ->
             val starship = Starship(this, pos)
             if(nbt != null) starship.readFromNbt(nbt)
             starship
         }
 
-        private fun send(buf: PacketByteBuf, type: StarshipType): Unit = TODO()
-        private fun receive(buf: PacketByteBuf): StarshipType = TODO()
+
+        val REGISTRY = FabricRegistryBuilder.createSimple(StarshipType::class.java, identifier("starship_type")).buildAndRegister().apply{register(GENERIC_STARSHIP_TYPE.id, GENERIC_STARSHIP_TYPE)}
+
+
+
+        private fun send(buf: PacketByteBuf, type: StarshipType): Unit = buf.run{
+            writeIdentifier(type.id)
+            writeBlockPos(type.pos)
+            writeIdentifier(type.structure)
+            (type.defaultTeleporterPos!=null).also { writeBoolean(it); if(it)writeBlockPos(type.defaultTeleporterPos) }
+            Unit
+        }
+        private fun receive(buf: PacketByteBuf): StarshipType = buf.run { StarshipType(
+            readIdentifier(),
+            readBlockPos(),
+            readIdentifier(),
+            if(readBoolean())readBlockPos()else null
+        ) { nbt, pos ->
+            val starship = Starship(this, pos)
+            if(nbt != null) starship.readFromNbt(nbt)
+            else {
+
+            }
+            starship
+        } }
         private fun read(json: JsonElement): StarshipType = read(json.asJsonObject)
         private fun read(json: JsonObject): StarshipType = StarshipType(
             Identifier(json["id"].asString),

@@ -21,13 +21,13 @@
     "main": [
       {
         "adapter": "kotlin",
-        "value": "com.oyosite.ticon.starship.Starship"
+        "value": "com.oyosite.ticon.starship.StarshipMod"
       }
     ],
     "client": [
       {
         "adapter": "kotlin",
-        "value": "com.oyosite.ticon.starship.StarshipClient"
+        "value": "com.oyosite.ticon.starship.StarshipModClient"
       }
     ],
     "cardinal-components": [

@@ -19,7 +19,7 @@ interface StarshipWorldComponent : ComponentV3 {
     fun getIndex(x: Int, y: Int): Int
     fun getIndex(pos: BlockPos): Int = getIndex(pos.x.floorDiv(1024), pos.y.floorDiv(1024))
 
-    fun addStarship(starship: Starship)
+    fun addStarship(starship: Starship): Int
 
     class Impl(val provider: World) : StarshipWorldComponent, AutoSyncedComponent{
         private val starships = mutableListOf<Starship?>()
@@ -34,6 +34,6 @@ interface StarshipWorldComponent : ComponentV3 {
 
         override fun writeToNbt(tag: NbtCompound) {tag.put("starships", NbtList().apply{addAll(starships.map{NbtCompound().apply{putString("type", it?.type?.id?.toString() ?: "");put("data",it?.writeToNbt()?:NbtCompound())}})})}
 
-        override fun addStarship(starship: Starship) {if(!starships.contains(starship))starships.add(starship)}
+        override fun addStarship(starship: Starship): Int {if(!starships.contains(starship))starships.add(starship);return starships.indexOf(starship)}
     }
 }

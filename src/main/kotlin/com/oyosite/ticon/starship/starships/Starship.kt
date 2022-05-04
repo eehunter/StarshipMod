@@ -3,6 +3,7 @@ package com.oyosite.ticon.starship.starships
 import com.oyosite.ticon.starship.StarshipMod
 import com.oyosite.ticon.starship.Util.getList
 import com.oyosite.ticon.starship.block.StarshipBlocks
+import com.oyosite.ticon.starship.block.TeleporterBlock
 import com.oyosite.ticon.starship.block.entity.TeleporterBlockEntity
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions
 import net.minecraft.block.Blocks
@@ -18,13 +19,14 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.TeleportTarget
 import net.minecraft.world.World
+import java.util.*
 
 class Starship(val type: StarshipType, val origin: BlockPos){
 
     var generated = false
     val teleporters = mutableSetOf<BlockPos>()
     var orbitId: Identifier? = null
-    val orbitKey: RegistryKey<World> get() = RegistryKey.of(Registry.WORLD_KEY, orbitId) ?: World.OVERWORLD
+    val orbitKey: RegistryKey<World> get() = orbitId?.run{ RegistryKey.of(Registry.WORLD_KEY, this) } ?: World.OVERWORLD
 
     init{
         type.defaultTeleporterPos?.add(origin)?.let(teleporters::add)
@@ -52,12 +54,12 @@ class Starship(val type: StarshipType, val origin: BlockPos){
         val newWorld = oldWorld.server?.getWorld(StarshipMod.STARSHIP_WORLD)?:return
         if(!generated)generate(newWorld)
         for(pos in teleporters){
-            val teleporter = newWorld.getBlockEntity(pos)
-            if(teleporter is TeleporterBlockEntity){
-                if(teleporterName == null || teleporterName==teleporter.name){
-                    FabricDimensions.teleport(player, newWorld, TeleportTarget(teleporter.pos.up().run{ Vec3d(x.toDouble(), y.toDouble(), z.toDouble()) }, Vec3d.ZERO,player.yaw, player.pitch))
-                    break
-                }
+            val teleporter = newWorld.getBlockState(pos)//getBlockEntity(pos)
+            if(teleporter.block is TeleporterBlock){
+                //if(teleporterName == null || teleporterName==teleporter.name){
+                FabricDimensions.teleport(player, newWorld, TeleportTarget(pos.up().run{ Vec3d(x.toDouble()+.5, y.toDouble(), z.toDouble()+.5) }, Vec3d.ZERO,player.yaw, player.pitch))
+                break
+                //}
             }
         }
     }
@@ -66,13 +68,16 @@ class Starship(val type: StarshipType, val origin: BlockPos){
         val oldWorld = player.entityWorld
         if(oldWorld.isClient)return
         val newWorld = oldWorld.server?.getWorld(orbitKey)?:return
-        val x = newWorld.random.nextInt(32)-16
-        val z = newWorld.random.nextInt(32)-16
+        val x = random.nextInt(32)-16
+        val z = random.nextInt(32)-16
         val chunk = newWorld.getChunk(x, z)
         var pos = BlockPos(x, chunk.topY, z)
         while(pos.y>chunk.bottomY && chunk.getBlockState(pos).isAir) pos = pos.down()
-        if(!chunk.getBlockState(pos).isAir) FabricDimensions.teleport(player, newWorld, TeleportTarget(pos.up().run{ Vec3d(x.toDouble(), y.toDouble(), z.toDouble()) }, Vec3d.ZERO,player.yaw, player.pitch))
+        if(!chunk.getBlockState(pos).isAir) FabricDimensions.teleport(player, newWorld, TeleportTarget(pos.up().run{ Vec3d(x.toDouble()+.5, y.toDouble(), z.toDouble()+.5) }, Vec3d.ZERO,player.yaw, player.pitch))
     }
 
+    companion object{
+        private val random = Random()
+    }
 
 }
