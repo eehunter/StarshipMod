@@ -26,6 +26,7 @@ repositories {
     maven { setUrl("https://maven.terraformersmc.com/") }
     maven { setUrl("https://maven.jamieswhiteshirt.com/libs-release/");content{includeGroup ("com.jamieswhiteshirt")} }
     maven { setUrl("https://maven.bai.lol") }
+    maven { setUrl("https://server.bbkr.space/artifactory/libs-release") }
 }
 
 dependencies {
@@ -45,6 +46,9 @@ dependencies {
 
     modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${property("cca-version")}")
     include("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${property("cca-version")}")
+
+    modImplementation("io.github.cottonmc:LibGui:${property("lib-gui-version")}")
+    include("io.github.cottonmc:LibGui:${property("lib-gui-version")}")
     //modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${property("wthit_version")}")
 }
 
