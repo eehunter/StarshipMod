@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtList
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-interface StarshipWorldComponent : ComponentV3 {
+interface StarshipWorldComponent : ComponentV3, AutoSyncedComponent {
     operator fun get(index: Int): Starship?
     operator fun get(x: Int, y: Int): Starship? = this[getIndex(x,y)]
     operator fun get(pos: BlockPos): Starship? = this[pos.x.floorDiv(1024), pos.y.floorDiv(1024)]
@@ -28,7 +28,7 @@ interface StarshipWorldComponent : ComponentV3 {
     fun getTeleporters(): List<Pair<BlockPos, String?>>
     fun getTeleporters(predicate: (Pair<BlockPos, String?>)->Boolean): List<Pair<BlockPos, String?>>
 
-    class Impl(val provider: World) : StarshipWorldComponent, AutoSyncedComponent{
+    class Impl(val provider: World) : StarshipWorldComponent{
         /**
          * Starships should only exist in the starship world
          * */

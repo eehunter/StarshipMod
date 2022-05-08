@@ -11,6 +11,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.NamedScreenHandlerFactory
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
@@ -38,6 +39,11 @@ class TeleporterBlock(material: Material, settings: Settings.()->Unit): Block(Se
             }
             starship.bringTo(player)
         }*/
+
+        if(!world.isClient) ComponentEntrypoint.STARSHIP_ENTITY_COMPONENT.apply{
+            get(player).teleporters.apply{ if(none{it.first.value==world.registryKey.value&&it.second==pos})add(world.registryKey to pos) }
+            syncWith(player as ServerPlayerEntity, player)
+        }
         player.openHandledScreen(state.createScreenHandlerFactory(world, pos))
         return ActionResult.SUCCESS
     }
