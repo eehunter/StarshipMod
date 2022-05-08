@@ -28,7 +28,7 @@ interface StarshipEntityComponent : ComponentV3, AutoSyncedComponent {
 
     class Impl(val provider: LivingEntity): StarshipEntityComponent{
 
-        override val teleporters: MutableList<TeleporterReference> = mutableListOf()
+        override val teleporters: MutableList<TeleporterReference> = mutableListOf(("starship" to BlockPos(512,256,512)).teleRef)
 
         override var visibleTeleporters = mutableListOf<TeleporterVisibility>()
 

@@ -17,7 +17,7 @@ import net.minecraft.world.World
 object StarshipMod : ModInitializer {
     const val MODID = "starship"
     val STARSHIP_WORLD: RegistryKey<World> = RegistryKey.of(Registry.WORLD_KEY, Identifier(MODID, "starship"))
-    val TELEPORTER_SCREEN_HANDLER by lazy {Registry.SCREEN_HANDLER.register("teleporter", ScreenHandlerType(::TeleporterGuiDescription))}
+    val TELEPORTER_SCREEN_HANDLER: ScreenHandlerType<TeleporterGuiDescription> by lazy {Registry.SCREEN_HANDLER.register("teleporter", ScreenHandlerType(::TeleporterGuiDescription))}
     override fun onInitialize() {
         Registry.CHUNK_GENERATOR.register("starship", VoidChunkGenerator.CODEC)
         StarshipBlocks.register()

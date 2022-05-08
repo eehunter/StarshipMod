@@ -26,11 +26,11 @@ class TeleporterGuiDescription(syncId: Int, val playerInventory: PlayerInventory
     private var list = WListPanel(teleporterReferences, ::TeleporterReferenceWidget, TeleporterReferenceWidget.Companion::configurator)
     private val root = object : WGridPanel(), TickableWidget{
         override fun tick() {
-            if(lastRefUpdate==comp.lastRefUpdate)return
+            /*if(lastRefUpdate==comp.lastRefUpdate)return
             remove(list)
             list = WListPanel(teleporterReferences, ::TeleporterReferenceWidget, TeleporterReferenceWidget.Companion::configurator)
             list.setListItemHeight(30)
-            add(list, 2, 20, 296, 378)
+            add(list, 2, 20, 296, 378)*/
         }
     }
     init{
@@ -38,8 +38,8 @@ class TeleporterGuiDescription(syncId: Int, val playerInventory: PlayerInventory
         root.setSize(300,400)
         root.insets = ROOT_PANEL
 
-        list.setListItemHeight(30)
-        root.add(list,2, 20, 296, 378)
+        list.setListItemHeight(40)
+        //root.add(list,2, 20, 296, 378)
 
         root.validate(this)
     }

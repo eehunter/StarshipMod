@@ -53,7 +53,8 @@
   },
   "custom": {
     "cardinal-components": [
-      "starship:starship_component"
+      "starship:starship_component",
+      "starship:starship_entity_component"
     ]
   }
 }

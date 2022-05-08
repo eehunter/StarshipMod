@@ -6,8 +6,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.Registry
 
 object Util {
-    fun <T> Registry<T>.register(id: Identifier, entry: T) = Registry.register(this, id, entry)
-    fun <T> Registry<T>.register(id: String, entry: T) = register(identifier(id), entry)
+    fun <T, U:T> Registry<T>.register(id: Identifier, entry: U) = Registry.register(this, id, entry) as U
+    fun <T, U:T> Registry<T>.register(id: String, entry: U) = register(identifier(id), entry)
     fun NbtCompound.getList(key: String, type: Byte) = getList(key, type.toInt())
     fun identifier(id: String) = Identifier(if(id.contains(":"))id else "${StarshipMod.MODID}:$id")
     fun BlockPos(nbt:NbtCompound) = BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"))
