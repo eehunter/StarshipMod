@@ -11,7 +11,7 @@ import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.World
 
 typealias TeleporterReference = Pair<RegistryKey<World>, BlockPos>
-fun TeleporterReference.writeToNbt() = NbtCompound().apply { putString("world", first.value.toString());putBlockPos("pos", second) }
+fun TeleporterReference.writeToNbt() = NbtCompound().apply { putString("world", first.value.toString());second.apply{putInt("x",x);putInt("y",y);putInt("z",z)} }
 val Pair<String, BlockPos>.teleRef get() = RegistryKey.of(Registry.WORLD_KEY, identifier(first)) to second
 
 typealias TeleporterVisibility = Triple<Identifier, BlockPos, String?>

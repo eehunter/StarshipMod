@@ -13,4 +13,6 @@ object Util {
     fun BlockPos(nbt:NbtCompound) = BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"))
     fun NbtCompound.getBlockPos(key: String) = BlockPos(getCompound(key))
     fun NbtCompound.putBlockPos(key: String, pos: BlockPos) = put(key, NbtCompound().also { putInt("x",pos.x);putInt("y",pos.y);putInt("z",pos.z) })
+    val Long.colorInt get() = (if(this and 0xff000000 == 0L)this or 0xff000000 else this).toUInt().toInt()
+    val Int.colorInt get() = this.toLong().colorInt
 }

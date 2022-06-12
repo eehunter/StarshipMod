@@ -45,6 +45,8 @@ interface StarshipWorldComponent : ComponentV3, AutoSyncedComponent {
         override fun readFromNbt(tag: NbtCompound) {
             tag.getList("starships", NbtElement.COMPOUND_TYPE).map { it as NbtCompound }.forEachIndexed { i, it -> starships += StarshipType.REGISTRY.get(identifier(it.getString("type")))?.makeStarship(it.getCompound("data"), getOrigin(i)) }
             tag.getList("teleporters", NbtElement.COMPOUND_TYPE).map { it as NbtCompound }.forEach { teleporters[BlockPos(it.getInt("x"),it.getInt("y"),it.getInt("z"))] = if(it.contains("name"))it.getString("name")else null }
+            val teleporterLocs = teleporters.keys
+            starships.filterNotNull().forEach { it.teleporters.filterNot(teleporterLocs::contains).forEach(this::addTeleporter) }
         }
 
         override fun writeToNbt(tag: NbtCompound) {

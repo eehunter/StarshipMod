@@ -22,7 +22,7 @@ interface StarshipEntityComponent : ComponentV3, AutoSyncedComponent {
 
     val teleporters: MutableList<TeleporterReference>
 
-    var visibleTeleporters: MutableList<TeleporterVisibility>
+    var visibleTeleporters: MutableSet<TeleporterVisibility>
 
     val lastRefUpdate: Long
 
@@ -30,7 +30,7 @@ interface StarshipEntityComponent : ComponentV3, AutoSyncedComponent {
 
         override val teleporters: MutableList<TeleporterReference> = mutableListOf(("starship" to BlockPos(512,256,512)).teleRef)
 
-        override var visibleTeleporters = mutableListOf<TeleporterVisibility>()
+        override var visibleTeleporters = mutableSetOf<TeleporterVisibility>()
 
         private var _lastRefUpdate = 0L
         override val lastRefUpdate: Long get() = _lastRefUpdate
@@ -42,15 +42,17 @@ interface StarshipEntityComponent : ComponentV3, AutoSyncedComponent {
             worldsToCheck.forEach{worldKey->
                 val world = provider.world.server!!.getWorld(worldKey)?:return@forEach
                 val worldComp = ComponentEntrypoint.STARSHIP_WORLD_COMPONENT[world]
-                val poses = teleporters.filter{it.first==worldKey}.map(TeleporterReference::second)
-                otpt.addAll(worldComp.getTeleporters { poses.contains(it.first) }.map{ Triple(worldKey.value, it.first, it.second) })
+                val poses = teleporters.filter{it.first==worldKey}.map(TeleporterReference::second).toSet()
+                //println(worldKey.value)
+                //println(poses)
+                worldComp.getTeleporters { poses.contains(it.first) }.map{ Triple(worldKey.value, it.first, it.second) }.forEach { if(!otpt.contains(it))otpt.add(it) }
             }
             return otpt
         }
 
         override fun writeSyncPacket(buf: PacketByteBuf, recipient: ServerPlayerEntity) {
             super.writeSyncPacket(buf, recipient)
-            visibleTeleporters = findVisibleTeleporters().apply {
+            visibleTeleporters = findVisibleTeleporters().toMutableSet().apply {
                 buf.writeInt(size)
                 forEach { buf.writeTeleporterVisibility(it) }
             }
@@ -59,12 +61,14 @@ interface StarshipEntityComponent : ComponentV3, AutoSyncedComponent {
 
         override fun applySyncPacket(buf: PacketByteBuf) {
             super.applySyncPacket(buf)
-            visibleTeleporters=MutableList(buf.readInt()){buf.readTeleporterVisibility()}
+            visibleTeleporters=HashSet(List(buf.readInt()){buf.readTeleporterVisibility()})
             _lastRefUpdate = buf.readLong()
         }
 
         override fun readFromNbt(tag: NbtCompound) {
             tag.getList("teleporters", COMPOUND_TYPE).forEach { teleporters += it as NbtCompound }
+            println("Teleporters known by ${provider.entityName}: $teleporters")
+
         }
 
         override fun writeToNbt(tag: NbtCompound) {
@@ -73,8 +77,8 @@ interface StarshipEntityComponent : ComponentV3, AutoSyncedComponent {
         companion object{
             operator fun MutableList<TeleporterReference>.plusAssign(nbt: NbtCompound) {
                 val key = RegistryKey.of(Registry.WORLD_KEY, Identifier(nbt.getString("world")))
-                val pos = nbt.getBlockPos("pos")
-                this += TeleporterReference(key, pos)
+                val pos = BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"))//nbt.getBlockPos("pos")
+                TeleporterReference(key, pos).also{if(!contains(it))this += it}
             }
         }
     }

@@ -44,7 +44,7 @@ class TeleporterBlock(material: Material, settings: Settings.()->Unit): Block(Se
             get(player).teleporters.apply{ if(none{it.first.value==world.registryKey.value&&it.second==pos})add(world.registryKey to pos) }
             syncWith(player as ServerPlayerEntity, player)
         }
-        player.openHandledScreen(state.createScreenHandlerFactory(world, pos))
+        if(!player.isSneaking)player.openHandledScreen(state.createScreenHandlerFactory(world, pos))
         return ActionResult.SUCCESS
     }
 
